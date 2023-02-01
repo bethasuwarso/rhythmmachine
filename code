@@ -1,0 +1,124 @@
+int piezzoPin1 = 11;
+int pause1 = 300;
+int piezzoPin2 = 5;
+int pause2 = 100;
+
+
+int knob = A5;    //pin of the first button
+int button1 = 2;  //pin of the second button
+
+int knobVal = 0;
+int buttonVal = 0;
+int prevButtonVal = 1;
+
+int state = 0;
+
+long currentmillis = 0;
+long previousmillis1 = 0;
+long previousmillis2 = 0;
+
+bool piezzoOff1 = true;
+bool piezzoOff2 = true;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(piezzoPin1, OUTPUT);
+  pinMode(piezzoPin2, OUTPUT);
+  Serial.begin(9600);
+  pinMode(knob, INPUT);            //define first button as input pullup
+  pinMode(button1, INPUT_PULLUP);  //define second button as input pullup
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  currentmillis = millis();
+  prevButtonVal = buttonVal;
+  buttonVal = digitalRead(button1);
+  knobVal = analogRead(knob);
+  pause1 = map(knobVal, 0, 1023, 50, 1000);
+  Serial.println(pause1);
+
+  if (buttonVal == 0 && prevButtonVal == 1) {  //if Value read of the button ==LOW:
+    Serial.println("button pressed");
+    if (state == 0) {
+      state = 1;
+      Serial.println("turn on");
+    } else if (state == 1) {
+      state = 0;
+      Serial.println("turn off");
+    }
+  }
+  // Serial.println(state);
+
+  if (state == 0) {
+    // statements for things being off
+  } else if (state == 1) {
+    // statements for device being on, buzzer on etc
+    tap1();
+    tap2();
+  }
+
+
+
+  //digitalWrite(piezzoPin, HIGH);
+  //delay(pause);
+  //digitalWrite(piezzoPin, LOW);
+  //delay(pause);
+
+  /*for (pos = 90; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
+    beat.write(pos);                    // tell servo to go to position in variable 'pos'
+    delay(5);                           // waits 15ms for the servo to reach the position
+
+    time.write(pos);  // tell servo to go to position in variable 'pos'
+    delay(15);        // waits 15ms for the servo to reach the position
+
+    //pos++;  //increases the value of the "pos" variable each time the push button of the left is pressed
+    //delay(5); //5 milliseconds of delay
+    //servo.write(pos); //servo goes to variable pos
+  }
+}
+*/
+  // Serial.print(previousmillis1);
+  // Serial.print(",");
+  // Serial.print(previousmillis2);
+  // Serial.print(",");
+  // Serial.println(currentmillis);
+
+
+  //Serial.print(piezzoOff1);
+  //Serial.print(",");
+  // Serial.println(piezzoOff2);
+}
+
+void tap1() {
+  if (currentmillis - previousmillis1 >= pause1) {
+
+    if (piezzoOff1 == true) {
+      digitalWrite(piezzoPin1, HIGH);
+      Serial.println("piezzo 1 On");
+      piezzoOff1 = false;
+    } else if (piezzoOff1 == false) {
+      digitalWrite(piezzoPin1, LOW);
+      Serial.println("piezzo 1 Off");
+      piezzoOff1 = true;
+    }
+    previousmillis1 = millis();
+  }
+}
+
+
+void tap2() {
+  if (currentmillis - previousmillis2 >= pause2) {
+    if (piezzoOff2 == true) {
+      digitalWrite(piezzoPin2, HIGH);
+      Serial.println("piezzo 2 On");
+      piezzoOff2 = false;
+    } else if (piezzoOff2 == false) {
+      digitalWrite(piezzoPin2, LOW);
+      Serial.println("piezzo 2 Off");
+      piezzoOff2 = true;
+    }
+    previousmillis2 = millis();
+  }
+}
